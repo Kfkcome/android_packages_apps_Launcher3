@@ -4228,7 +4228,6 @@ public abstract class RecentsView<ACTIVITY_TYPE extends StatefulActivity<STATE_T
                         .setScroll(getScrollOffset()));
         setImportantForAccessibility(isModal() ? IMPORTANT_FOR_ACCESSIBILITY_NO
                 : IMPORTANT_FOR_ACCESSIBILITY_AUTO);
-        doScrollScale();
     }
 
     private void updatePivots() {
@@ -5827,35 +5826,6 @@ public abstract class RecentsView<ACTIVITY_TYPE extends StatefulActivity<STATE_T
     protected void onScrollChanged(int l, int t, int oldl, int oldt) {
         super.onScrollChanged(l, t, oldl, oldt);
         dispatchScrollChanged();
-        doScrollScale();
-    }
-
-    private void doScrollScale() {
-        if (showAsGrid())
-            return;
-
-        boolean isInLandscape = mOrientationState.getTouchRotation() != ROTATION_0
-                                && mOrientationState.getTouchRotation() != ROTATION_180;
-
-	mIsLandScape = isInLandscape;
-
-        int childCount = Math.min(mPageScrolls.length, getChildCount());
-        int curScroll = isInLandscape ? getScrollY() : getScrollX();
-
-        for (int i = 0; i < childCount; i++) {
-            View child = getChildAt(i);
-            int scaleArea = child.getWidth() + mPageSpacing;
-            int childPosition = mPageScrolls[i];
-            int scrollDelta = Math.abs(curScroll - childPosition);
-            if (scrollDelta > scaleArea) {
-                child.setScaleX(mScrollScale);
-                child.setScaleY(mScrollScale);
-            } else {
-                float scale = mapToRange(scrollDelta, 0, scaleArea, 1f, mScrollScale, LINEAR);
-                child.setScaleX(scale);
-                child.setScaleY(scale);
-            }
-        }
     }
 
     private void dispatchScrollChanged() {
